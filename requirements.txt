@@ -1,0 +1,7 @@
+pandas
+oracledb
+streamlit
+plotly
+python-dotenv
+# Opcional: habilita uso do PlatformIO via CLI
+platformio

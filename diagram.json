@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "author": "FarmTech Solutions",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": -4.76, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": 227,
+      "left": -19.2,
+      "attrs": { "color": "green", "xray": "1", "label": "Nitrogênio", "key": "n" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn2",
+      "top": 265.4,
+      "left": 48,
+      "attrs": { "color": "green", "xray": "1", "label": "Potássio", "key": "k" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn3",
+      "top": 303.8,
+      "left": 105.6,
+      "attrs": { "color": "green", "xray": "1", "label": "Fósforo", "key": "p" }
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": 12.8,
+      "left": -248.8,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": 81.6,
+      "left": -190.5,
+      "rotate": 270,
+      "attrs": { "humidity": "66" }
+    },
+    {
+      "type": "wokwi-relay-module",
+      "id": "relay1",
+      "top": -67.8,
+      "left": -147.2,
+      "rotate": 180,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "btn1:1.r", "esp:16", "green", [ "h67.4", "v-96" ] ],
+    [ "btn1:2.r", "esp:GND.2", "black", [ "h77", "v-220.6" ] ],
+    [ "btn2:1.r", "esp:17", "green", [ "h19.4", "v-144" ] ],
+    [ "btn2:2.r", "esp:GND.2", "black", [ "h29", "v-259" ] ],
+    [ "btn3:1.r", "esp:18", "green", [ "h9.8", "v-211.2" ] ],
+    [ "btn3:2.r", "esp:GND.2", "black", [ "h19.4", "v-297.4" ] ],
+    [ "ldr1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "ldr1:AO", "esp:34", "green", [ "v-0.7", "h39.6", "v9.6" ] ],
+    [ "ldr1:GND", "esp:GND.1", "black", [ "h20.4", "v-0.4", "h38.4", "v115.2" ] ],
+    [ "dht1:SDA", "esp:4", "green", [ "h57.6", "v76.7", "h153.6", "v-76.8" ] ],
+    [ "dht1:GND", "esp:GND.1", "black", [ "h67.2", "v28.8", "h28.8" ] ],
+    [ "relay1:IN", "esp:23", "blue", [ "v-0.2", "h124.8", "v106" ] ],
+    [ "relay1:GND", "esp:GND.2", "black", [ "h19.2", "v0.4", "h96" ] ],
+    [ "relay1:VCC", "esp:5V", "red", [ "h9.6", "v230.4" ] ],
+    [ "dht1:VCC", "esp:5V", "red", [ "h48", "v48" ] ]
+  ],
+  "dependencies": {}
+}

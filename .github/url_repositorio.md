@@ -1,0 +1,1 @@
+https://github.com/AI-FIAP-2026/farmtech-solutions

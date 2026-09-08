@@ -1,0 +1,443 @@
+"""Database helpers for Oracle integration."""
+
+from typing import List, Tuple
+import logging
+
+import oracledb
+import pandas as pd
+
+from .config import get_oracle_config
+
+logger = logging.getLogger(__name__)
+
+
+def get_connection():
+    """Return an active Oracle connection using environment configuration."""
+    oracle_cfg = get_oracle_config()
+
+    if not oracle_cfg.is_configured:
+        raise RuntimeError(
+            "Variáveis ORACLE_USER / ORACLE_PASSWORD / ORACLE_DSN não configuradas"
+        )
+
+    try:
+        return oracledb.connect(
+            user=oracle_cfg.user,
+            password=oracle_cfg.password,
+            dsn=oracle_cfg.dsn,
+        )
+    except Exception:
+        logger.exception("Erro conectando ao Oracle. Verifique .env, DSN e rede.")
+        raise
+
+
+def test_connection() -> bool:
+    """Return True when Oracle connection succeeds."""
+    try:
+        conn = get_connection()
+        conn.close()
+        return True
+    except Exception:
+        return False
+
+
+def list_tables(conn) -> List[str]:
+    """Return a list of user table names."""
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT table_name FROM user_tables ORDER BY table_name")
+        return [row[0] for row in cur.fetchall()]
+    finally:
+        cur.close()
+
+
+def get_table_columns(conn, table_name: str) -> List[Tuple[str, str]]:
+    """Return list of (column_name, data_type) for given table."""
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            """
+            SELECT column_name, data_type
+            FROM user_tab_columns
+            WHERE table_name = :table_name
+            ORDER BY column_id
+            """,
+            table_name=table_name.upper(),
+        )
+        return cur.fetchall()
+    finally:
+        cur.close()
+
+
+def table_exists(conn, table_name: str) -> bool:
+    """Return True if the named table exists."""
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            """
+            SELECT COUNT(*)
+            FROM user_tables
+            WHERE table_name = :table_name
+            """,
+            table_name=table_name.upper(),
+        )
+        return cur.fetchone()[0] > 0
+    finally:
+        cur.close()
+
+
+def view_exists(conn, view_name: str) -> bool:
+    """Return True if the named view exists."""
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            """
+            SELECT COUNT(*)
+            FROM user_views
+            WHERE view_name = :view_name
+            """,
+            view_name=view_name.upper(),
+        )
+        return cur.fetchone()[0] > 0
+    finally:
+        cur.close()
+
+
+def sample_table(conn, table_name: str, n: int = 10) -> pd.DataFrame:
+    """Return up to n rows from a table or view."""
+    cur = conn.cursor()
+    try:
+        cur.execute(f"SELECT * FROM {table_name} WHERE ROWNUM <= :n", n=int(n))
+        cols = [desc[0] for desc in cur.description]
+        rows = cur.fetchall()
+        return pd.DataFrame(rows, columns=cols)
+    finally:
+        cur.close()
+
+
+def count_rows(conn, table_name: str) -> int:
+    """Return number of rows in a table or view."""
+    cur = conn.cursor()
+    try:
+        cur.execute(f"SELECT COUNT(*) FROM {table_name}")
+        return int(cur.fetchone()[0])
+    finally:
+        cur.close()
+
+
+def load_clima(conn) -> pd.DataFrame:
+    return sample_table(conn, "CS_CLIMA", n=1000)
+
+
+def load_fazendas(conn) -> pd.DataFrame:
+    return sample_table(conn, "CS_FAZENDAS", n=1000)
+
+
+def load_sensores_iot(conn, n: int = 1000) -> pd.DataFrame:
+    if not table_exists(conn, "CS_SENSORES_IOT"):
+        return pd.DataFrame()
+    return sample_table(conn, "CS_SENSORES_IOT", n=n)
+
+
+def load_ml_view(conn, n: int = 1000) -> pd.DataFrame:
+    if not view_exists(conn, "VW_DADOS_AGRICOLAS_ML"):
+        return pd.DataFrame()
+    return sample_table(conn, "VW_DADOS_AGRICOLAS_ML", n=n)
+
+
+def _infer_column(conn, table_name: str, candidates: list[str]) -> str | None:
+    """Return the first existing column from a candidate list."""
+    existing = [col[0].upper() for col in get_table_columns(conn, table_name)]
+    for candidate in candidates:
+        if candidate.upper() in existing:
+            return candidate.upper()
+    return None
+
+
+def detect_fazenda_pk(conn) -> str:
+    """Detect primary key-like column from CS_FAZENDAS."""
+    column = _infer_column(conn, "CS_FAZENDAS", ["ID", "ID_FAZENDA"])
+    if not column:
+        raise RuntimeError("Não foi possível detectar a chave da tabela CS_FAZENDAS.")
+    return column
+
+
+def create_sensores_iot_table(conn):
+    """Create normalized CS_SENSORES_IOT if it does not exist."""
+    if table_exists(conn, "CS_SENSORES_IOT"):
+        return
+
+    fazenda_pk = detect_fazenda_pk(conn)
+
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            """
+            CREATE TABLE CS_SENSORES_IOT (
+                ID_SENSOR NUMBER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+                ID_FAZENDA NUMBER NOT NULL,
+                DATA_HORA TIMESTAMP NOT NULL,
+                UMIDADE_SOLO NUMBER(10,2) NOT NULL,
+                TEMPERATURA_SOLO NUMBER(10,2) NOT NULL,
+                NUTRIENTES_N NUMBER(10,2) NOT NULL,
+                ACAO_IRRIGACAO NUMBER(1) NOT NULL,
+                SCORE_NECESSIDADE_IRRIGACAO NUMBER(10,2) NOT NULL,
+                VOLUME_IRRIGACAO_ESTIMADO NUMBER(10,2) NOT NULL,
+                DATA_CRIACAO TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
+
+        try:
+            cur.execute(
+                f"""
+                ALTER TABLE CS_SENSORES_IOT
+                ADD CONSTRAINT FK_SENSORES_FAZENDAS
+                FOREIGN KEY (ID_FAZENDA)
+                REFERENCES CS_FAZENDAS({fazenda_pk})
+                """
+            )
+        except Exception as exc:
+            logger.warning("FK não criada automaticamente: %s", exc)
+
+        try:
+            cur.execute(
+                """
+                CREATE INDEX IDX_SENSORES_IOT_FAZENDA_DATA
+                ON CS_SENSORES_IOT (ID_FAZENDA, DATA_HORA)
+                """
+            )
+        except Exception as exc:
+            logger.warning("Índice não criado automaticamente: %s", exc)
+
+        conn.commit()
+    finally:
+        cur.close()
+
+
+def insert_sensores_iot_from_dataframe(
+    conn,
+    df: pd.DataFrame,
+    allow_if_exists: bool = False,
+) -> int:
+    """
+    Insert legacy CSV rows into CS_SENSORES_IOT.
+
+    Prefer scripts/rebuild_sensores_iot.py for the normalized dataset.
+    """
+    required_columns = {"umidade_solo", "temperatura", "nutrientes_N", "acao_irrigacao"}
+    if not required_columns.issubset(set(df.columns)):
+        missing = required_columns - set(df.columns)
+        raise ValueError(f"Colunas ausentes no CSV: {missing}")
+
+    create_sensores_iot_table(conn)
+
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT COUNT(*) FROM CS_SENSORES_IOT")
+        count = cur.fetchone()[0]
+
+        if count > 0 and not allow_if_exists:
+            return 0
+
+        fazenda_pk = detect_fazenda_pk(conn)
+        cur.execute(f"SELECT {fazenda_pk} FROM CS_FAZENDAS WHERE ROWNUM = 1")
+        first_fazenda = cur.fetchone()
+
+        if not first_fazenda:
+            raise RuntimeError("Nenhuma fazenda encontrada em CS_FAZENDAS.")
+
+        id_fazenda = int(first_fazenda[0])
+
+        insert_sql = """
+            INSERT INTO CS_SENSORES_IOT (
+                ID_FAZENDA,
+                DATA_HORA,
+                UMIDADE_SOLO,
+                TEMPERATURA_SOLO,
+                NUTRIENTES_N,
+                ACAO_IRRIGACAO,
+                SCORE_NECESSIDADE_IRRIGACAO,
+                VOLUME_IRRIGACAO_ESTIMADO
+            )
+            VALUES (
+                :id_fazenda,
+                CURRENT_TIMESTAMP,
+                :umidade_solo,
+                :temperatura_solo,
+                :nutrientes_n,
+                :acao_irrigacao,
+                :score,
+                :volume
+            )
+        """
+
+        inserted = 0
+
+        for _, row in df.iterrows():
+            try:
+                umidade = float(row["umidade_solo"])
+                temperatura = float(row["temperatura"])
+                nutrientes = float(row["nutrientes_N"])
+                acao = int(row["acao_irrigacao"])
+                acao = 1 if acao else 0
+
+                score = (
+                    max(0, 60 - umidade) * 1.2
+                    + max(0, temperatura - 28) * 2.0
+                    + max(0, 15 - nutrientes / 10)
+                )
+                score = max(0, min(100, score))
+
+                volume = max(0, score * 0.7 + max(0, 35 - umidade) * 0.9)
+                volume = min(80, volume)
+
+                cur.execute(
+                    insert_sql,
+                    {
+                        "id_fazenda": id_fazenda,
+                        "umidade_solo": round(umidade, 2),
+                        "temperatura_solo": round(temperatura, 2),
+                        "nutrientes_n": round(nutrientes, 2),
+                        "acao_irrigacao": acao,
+                        "score": round(score, 2),
+                        "volume": round(volume, 2),
+                    },
+                )
+                inserted += 1
+
+            except Exception as exc:
+                logger.warning("Linha ignorada por erro de conversão: %s", exc)
+
+        conn.commit()
+        return inserted
+
+    finally:
+        cur.close()
+
+
+def compare_csv_with_tables(df: pd.DataFrame, conn) -> dict:
+    """Return mapping of CSV columns to tables with common columns."""
+    mapping = {}
+
+    for table in list_tables(conn):
+        cols = [col[0].lower() for col in get_table_columns(conn, table)]
+        common = set(col.lower() for col in df.columns).intersection(cols)
+        if common:
+            mapping[table] = sorted(common)
+
+    return mapping
+
+
+def create_eventos_view(conn):
+    """Create aggregated climate-events view by farm, year and month."""
+    fazenda_pk = detect_fazenda_pk(conn)
+
+    fazenda_cidade = _infer_column(conn, "CS_FAZENDAS", ["CIDADE", "MUNICIPIO"])
+    fazenda_uf = _infer_column(conn, "CS_FAZENDAS", ["UF", "ESTADO"])
+
+    evento_cidade = _infer_column(conn, "CS_CLIMA_EVENTOS", ["CIDADE", "MUNICIPIO"])
+    evento_uf = _infer_column(conn, "CS_CLIMA_EVENTOS", ["UF", "ESTADO"])
+    evento_data = _infer_column(conn, "CS_CLIMA_EVENTOS", ["DATA", "DATA_EVENTO", "DT_EVENTO"])
+    evento_status = _infer_column(conn, "CS_CLIMA_EVENTOS", ["STATUS", "SITUACAO"])
+
+    if not all([fazenda_cidade, fazenda_uf, evento_cidade, evento_uf, evento_data]):
+        raise RuntimeError("Não foi possível inferir colunas de eventos climáticos.")
+
+    status_expr = "0"
+    if evento_status:
+        status_expr = (
+            f"SUM(CASE WHEN UPPER(TRIM(e.{evento_status})) = 'RECONHECIDO' "
+            f"THEN 1 ELSE 0 END)"
+        )
+
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            f"""
+            CREATE OR REPLACE VIEW VW_EVENTOS_CLIMATICOS_FAZENDA AS
+            SELECT
+                f.{fazenda_pk} AS ID_FAZENDA,
+                EXTRACT(YEAR FROM e.{evento_data}) AS ANO,
+                EXTRACT(MONTH FROM e.{evento_data}) AS MES,
+                COUNT(e.{evento_data}) AS QTD_EVENTOS_CLIMATICOS,
+                {status_expr} AS QTD_EVENTOS_RECONHECIDOS,
+                COUNT(e.{evento_data}) AS VALOR_PREJUIZO_TOTAL
+            FROM CS_FAZENDAS f
+            LEFT JOIN CS_CLIMA_EVENTOS e
+                ON UPPER(TRIM(f.{fazenda_cidade})) = UPPER(TRIM(e.{evento_cidade}))
+               AND UPPER(TRIM(f.{fazenda_uf})) = UPPER(TRIM(e.{evento_uf}))
+            GROUP BY
+                f.{fazenda_pk},
+                EXTRACT(YEAR FROM e.{evento_data}),
+                EXTRACT(MONTH FROM e.{evento_data})
+            """
+        )
+        conn.commit()
+    finally:
+        cur.close()
+
+
+def create_vw_dados_agricolas_ml(conn):
+    """Create consolidated ML view."""
+    if not view_exists(conn, "VW_EVENTOS_CLIMATICOS_FAZENDA"):
+        create_eventos_view(conn)
+
+    fazenda_pk = detect_fazenda_pk(conn)
+
+    nome = _infer_column(conn, "CS_FAZENDAS", ["NOME_FAZENDA", "NOME"])
+    cultura = _infer_column(conn, "CS_FAZENDAS", ["CULTURA"])
+    cidade = _infer_column(conn, "CS_FAZENDAS", ["CIDADE", "MUNICIPIO"])
+    uf = _infer_column(conn, "CS_FAZENDAS", ["UF", "ESTADO"])
+    area = _infer_column(conn, "CS_FAZENDAS", ["AREA_HECTARES", "AREA"])
+
+    clima_temp = _infer_column(conn, "CS_CLIMA", ["TEMPERATURA"])
+    clima_umid = _infer_column(conn, "CS_CLIMA", ["UMIDADE"])
+    clima_vento = _infer_column(conn, "CS_CLIMA", ["VELOCIDADE_VENTO"])
+
+    if not all([clima_temp, clima_umid, clima_vento]):
+        raise RuntimeError("Não foi possível inferir colunas essenciais de CS_CLIMA.")
+
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            f"""
+            CREATE OR REPLACE VIEW VW_DADOS_AGRICOLAS_ML AS
+            SELECT
+                s.ID_SENSOR,
+                s.ID_FAZENDA,
+                {f"f.{nome}" if nome else "NULL"} AS NOME_FAZENDA,
+                {f"f.{cultura}" if cultura else "NULL"} AS CULTURA,
+                {f"f.{cidade}" if cidade else "NULL"} AS CIDADE,
+                {f"f.{uf}" if uf else "NULL"} AS UF,
+                {f"f.{area}" if area else "NULL"} AS AREA_HECTARES,
+                s.DATA_HORA,
+                EXTRACT(YEAR FROM s.DATA_HORA) AS ANO,
+                EXTRACT(MONTH FROM s.DATA_HORA) AS MES,
+                c.{clima_temp} AS TEMPERATURA_AR,
+                c.{clima_umid} AS UMIDADE_AR,
+                c.{clima_vento} AS VELOCIDADE_VENTO,
+                s.TEMPERATURA_SOLO,
+                s.UMIDADE_SOLO,
+                s.NUTRIENTES_N,
+                s.SCORE_NECESSIDADE_IRRIGACAO,
+                s.VOLUME_IRRIGACAO_ESTIMADO,
+                s.ACAO_IRRIGACAO,
+                NVL(ev.QTD_EVENTOS_CLIMATICOS, 0) AS QTD_EVENTOS_CLIMATICOS,
+                NVL(ev.QTD_EVENTOS_RECONHECIDOS, 0) AS QTD_EVENTOS_RECONHECIDOS,
+                NVL(ev.VALOR_PREJUIZO_TOTAL, 0) AS VALOR_PREJUIZO_TOTAL
+            FROM CS_SENSORES_IOT s
+            LEFT JOIN CS_FAZENDAS f
+                ON s.ID_FAZENDA = f.{fazenda_pk}
+            LEFT JOIN CS_CLIMA c
+                ON s.ID_FAZENDA = c.ID_FAZENDA
+               AND s.DATA_HORA = c.DATA_HORA
+            LEFT JOIN VW_EVENTOS_CLIMATICOS_FAZENDA ev
+                ON s.ID_FAZENDA = ev.ID_FAZENDA
+               AND EXTRACT(YEAR FROM s.DATA_HORA) = ev.ANO
+               AND EXTRACT(MONTH FROM s.DATA_HORA) = ev.MES
+            """
+        )
+        conn.commit()
+    finally:
+        cur.close()

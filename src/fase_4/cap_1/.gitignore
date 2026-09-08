@@ -1,0 +1,8 @@
+*.env
+__pycache__/
+.pytest_cache/
+venv/
+env/
+tempCodeRunnerFile.python
+*.pyc
+data/*.csv

@@ -1,0 +1,37 @@
+{
+  "cultura": "Cana-de-açúcar",
+  "descricao": "O Brasil é líder mundial na produção de cana-de-açúcar",
+  "parametros": {
+    "produtividade_media": 80,
+    "unidade": "ton/ha",
+    "ciclo_meses": 12,
+    "estagios": [
+      {
+        "nome": "Germinação",
+        "meses": [1, 2, 3],
+        "kc": 0.5
+      },
+      {
+        "nome": "Crescimento",
+        "meses": [4, 5, 6, 7, 8],
+        "kc": 0.8
+      },
+      {
+        "nome": "Maturação",
+        "meses": [9, 10, 11, 12],
+        "kc": 0.6
+      }
+    ]
+  },
+  "insumos_por_hectare": {
+    "adubo_n": 120,
+    "adubo_p2o5": 80,
+    "adubo_k2o": 100,
+    "herbicida": "Aminopyralid",
+    "pesticida": "Tiametoxam"
+  },
+  "referencias": [
+    "CONAB - Companhia Nacional de Abastecimento",
+    "IAC - Instituto Agronômico de Campinas"
+  ]
+}

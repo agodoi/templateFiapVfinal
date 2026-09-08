@@ -1,1 +1,0 @@
-Posicione aqui scripts auxiliares para tarefas específicas como deploy, migrações de banco de dados e backups.

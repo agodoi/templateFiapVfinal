@@ -1,4 +1,23 @@
-*.csv
 *.tsv
 *.xls
-*.xlsx
+
+# cache
+__pycache__
+
+# dependencies
+venv
+
+# PlatformIO
+.pio
+.vscode/launch.json
+.vscode/c_cpp_properties.json
+
+# R / Rstudio
+.Rhistory
+.Rproj*
+
+# Playwright CLI
+.playwright-cli
+
+# Environment variables
+.env

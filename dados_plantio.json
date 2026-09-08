@@ -1,0 +1,36 @@
+{
+  "sistema": "FarmTech Solutions - Gestão de Culturas",
+  "versao": "1.0",
+  "cultura_ativa": {
+    "nome": "cafe",
+    "area_m2": 3025.0,
+    "insumos": {
+      "adubo": 605000.0,
+      "agua_L": 9075.0,
+      "fosfato_g": 30250.0,
+      "herbicida": "Glifosato",
+      "pesticida": "Imidacloprido",
+      "fertilizante": "Inoculante Rhizobium"
+    },
+    "financeiro": {
+      "area_total": 0.0,
+      "peso_total_ton": 0.0,
+      "lucro_R$": 0.0,
+      "gastos_R$": 15000,
+      "metodo_aplicacao": "Drone Agrícola"
+    },
+    "qualidade": "Não analisado"
+  },
+  "culturas": [
+    {
+      "nome": "cafe",
+      "area_m2": 3025.0,
+      "insumos": {
+        "adubo": 605000.0,
+        "agua_L": 9075.0,
+        "fosfato_g": 30250.0
+      },
+      "qualidade": "Não analisado"
+    }
+  ]
+}

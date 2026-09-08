@@ -1,0 +1,101 @@
+ID_FAZENDA,ID_CLIENTE,LOCALIZACAO,MUNICIPIO,ESTADO,COD_IBGE,CULTURA
+1,1,Sítio Paineiras,Sorriso,MT,5107909,SOJA
+2,1,Estância Paraíso,Sorriso,MT,5107909,SOJA
+3,1,Agro Sol Nascente,Sorriso,MT,5107909,SOJA
+4,1,Recanto Bela Vista,Sorriso,MT,5107909,SOJA
+5,1,Sítio Bela Vista,Sorriso,MT,5107909,SOJA
+6,1,Fazenda Paraíso,Sorriso,MT,5107909,SOJA
+7,1,Recanto Bela Vista,Sorriso,MT,5107909,SOJA
+8,1,Fazenda Bela Vista,Sorriso,MT,5107909,SOJA
+9,1,Recanto do Horizonte,Sorriso,MT,5107909,SOJA
+10,1,Agro Sol Nascente,Sorriso,MT,5107909,SOJA
+11,2,Vale Paineiras,Rio Verde,GO,5218805,SOJA
+12,2,Agro Verde Vale,Rio Verde,GO,5218805,SOJA
+13,2,Sítio Paraíso,Rio Verde,GO,5218805,SOJA
+14,2,Sítio Paraíso,Rio Verde,GO,5218805,SOJA
+15,2,Vale Santa Rita,Rio Verde,GO,5218805,SOJA
+16,2,Sítio Paineiras,Rio Verde,GO,5218805,SOJA
+17,2,Vale Santa Rita,Rio Verde,GO,5218805,SOJA
+18,2,Recanto do Horizonte,Rio Verde,GO,5218805,SOJA
+19,2,Vale do Horizonte,Rio Verde,GO,5218805,SOJA
+20,2,Recanto Ouro Branco,Rio Verde,GO,5218805,SOJA
+21,3,Sítio Santa Rita,Sapezal,MT,5107859,SOJA
+22,3,Sítio Paraíso,Sapezal,MT,5107859,SOJA
+23,3,Fazenda do Norte,Sapezal,MT,5107859,SOJA
+24,3,Sítio do Norte,Sapezal,MT,5107859,SOJA
+25,3,Agro do Horizonte,Sapezal,MT,5107859,SOJA
+26,3,Vale Paraíso,Sapezal,MT,5107859,SOJA
+27,3,Vale do Horizonte,Sapezal,MT,5107859,SOJA
+28,3,Agro Sol Nascente,Sapezal,MT,5107859,SOJA
+29,3,Sítio Santa Rita,Sapezal,MT,5107859,SOJA
+30,3,Agro Paineiras,Sapezal,MT,5107859,SOJA
+31,4,Recanto das Palmeiras,Formosa do Rio Preto,BA,2911105,SOJA
+32,4,Sítio das Palmeiras,Formosa do Rio Preto,BA,2911105,SOJA
+33,4,Agro Santa Rita,Formosa do Rio Preto,BA,2911105,SOJA
+34,4,Recanto Paineiras,Formosa do Rio Preto,BA,2911105,SOJA
+35,4,Vale do Horizonte,Formosa do Rio Preto,BA,2911105,SOJA
+36,4,Sítio Santa Rita,Formosa do Rio Preto,BA,2911105,SOJA
+37,4,Sítio Santa Rita,Formosa do Rio Preto,BA,2911105,SOJA
+38,4,Recanto Sol Nascente,Formosa do Rio Preto,BA,2911105,SOJA
+39,4,Sítio das Palmeiras,Formosa do Rio Preto,BA,2911105,SOJA
+40,4,Recanto do Horizonte,Formosa do Rio Preto,BA,2911105,SOJA
+41,5,Estância das Palmeiras,Cristalina,GO,5206206,SOJA
+42,5,Recanto Paineiras,Cristalina,GO,5206206,SOJA
+43,5,Vale Santa Rita,Cristalina,GO,5206206,SOJA
+44,5,Sítio do Horizonte,Cristalina,GO,5206206,SOJA
+45,5,Sítio Verde Vale,Cristalina,GO,5206206,SOJA
+46,5,Sítio Verde Vale,Cristalina,GO,5206206,SOJA
+47,5,Agro Ouro Branco,Cristalina,GO,5206206,SOJA
+48,5,Recanto Ouro Branco,Cristalina,GO,5206206,SOJA
+49,5,Agro Ouro Branco,Cristalina,GO,5206206,SOJA
+50,5,Recanto Santa Rita,Cristalina,GO,5206206,SOJA
+51,6,Recanto das Palmeiras,Patrocínio,MG,3148103,CAFE
+52,6,Fazenda Santa Rita,Patrocínio,MG,3148103,CAFE
+53,6,Recanto Paineiras,Patrocínio,MG,3148103,CAFE
+54,6,Vale Verde Vale,Patrocínio,MG,3148103,CAFE
+55,6,Agro do Norte,Patrocínio,MG,3148103,CAFE
+56,6,Agro Bela Vista,Patrocínio,MG,3148103,CAFE
+57,6,Fazenda Sol Nascente,Patrocínio,MG,3148103,CAFE
+58,6,Fazenda Bela Vista,Patrocínio,MG,3148103,CAFE
+59,6,Recanto das Palmeiras,Patrocínio,MG,3148103,CAFE
+60,6,Recanto Sol Nascente,Patrocínio,MG,3148103,CAFE
+61,7,Vale Paraíso,Três Pontas,MG,3169307,CAFE
+62,7,Estância das Palmeiras,Três Pontas,MG,3169307,CAFE
+63,7,Agro Sol Nascente,Três Pontas,MG,3169307,CAFE
+64,7,Agro Paraíso,Três Pontas,MG,3169307,CAFE
+65,7,Sítio do Horizonte,Três Pontas,MG,3169307,CAFE
+66,7,Recanto Verde Vale,Três Pontas,MG,3169307,CAFE
+67,7,Sítio das Palmeiras,Três Pontas,MG,3169307,CAFE
+68,7,Estância Paraíso,Três Pontas,MG,3169307,CAFE
+69,7,Vale Sol Nascente,Três Pontas,MG,3169307,CAFE
+70,7,Recanto do Norte,Três Pontas,MG,3169307,CAFE
+71,8,Estância Sol Nascente,Nova Resende,MG,3145109,CAFE
+72,8,Recanto Sol Nascente,Nova Resende,MG,3145109,CAFE
+73,8,Agro do Horizonte,Nova Resende,MG,3145109,CAFE
+74,8,Sítio do Norte,Nova Resende,MG,3145109,CAFE
+75,8,Vale do Norte,Nova Resende,MG,3145109,CAFE
+76,8,Agro Paraíso,Nova Resende,MG,3145109,CAFE
+77,8,Recanto Paineiras,Nova Resende,MG,3145109,CAFE
+78,8,Fazenda Santa Rita,Nova Resende,MG,3145109,CAFE
+79,8,Estância Sol Nascente,Nova Resende,MG,3145109,CAFE
+80,8,Estância Santa Rita,Nova Resende,MG,3145109,CAFE
+81,9,Estância Paraíso,Espírito Santo do Pinhal,SP,3515103,CAFE
+82,9,Agro Ouro Branco,Espírito Santo do Pinhal,SP,3515103,CAFE
+83,9,Sítio do Horizonte,Espírito Santo do Pinhal,SP,3515103,CAFE
+84,9,Estância do Horizonte,Espírito Santo do Pinhal,SP,3515103,CAFE
+85,9,Fazenda Paraíso,Espírito Santo do Pinhal,SP,3515103,CAFE
+86,9,Estância Ouro Branco,Espírito Santo do Pinhal,SP,3515103,CAFE
+87,9,Sítio Verde Vale,Espírito Santo do Pinhal,SP,3515103,CAFE
+88,9,Fazenda Verde Vale,Espírito Santo do Pinhal,SP,3515103,CAFE
+89,9,Fazenda Santa Rita,Espírito Santo do Pinhal,SP,3515103,CAFE
+90,9,Recanto Ouro Branco,Espírito Santo do Pinhal,SP,3515103,CAFE
+91,10,Recanto das Palmeiras,Guaxupé,MG,3128709,CAFE
+92,10,Vale das Palmeiras,Guaxupé,MG,3128709,CAFE
+93,10,Fazenda Santa Rita,Guaxupé,MG,3128709,CAFE
+94,10,Estância Santa Rita,Guaxupé,MG,3128709,CAFE
+95,10,Vale do Norte,Guaxupé,MG,3128709,CAFE
+96,10,Agro Verde Vale,Guaxupé,MG,3128709,CAFE
+97,10,Sítio das Palmeiras,Guaxupé,MG,3128709,CAFE
+98,10,Agro Ouro Branco,Guaxupé,MG,3128709,CAFE
+99,10,Fazenda Santa Rita,Guaxupé,MG,3128709,CAFE
+100,10,Estância Paineiras,Guaxupé,MG,3128709,CAFE

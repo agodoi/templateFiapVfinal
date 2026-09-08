@@ -1,1 +1,0 @@
-Posicione aqui os arquivos e pastas de código-fonte do projeto. A cada entrega de sprint, será considerado o último commit dentro do prazo. A partir dali, toda e qualquer alteração será considerada na próxima sprint. Apague este arquivo .md ao final do módulo.
