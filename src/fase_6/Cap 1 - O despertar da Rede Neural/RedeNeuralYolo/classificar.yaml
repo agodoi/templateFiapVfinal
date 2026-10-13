@@ -1,7 +1,5 @@
 names:
   0: Copo
   1: Taca
-train: /content/drive/MyDrive/Faculdade/Fase 6 - Colheita de Soluções Inteligentes
-  - transformando dados em ações/Cap 1 - O despertar da Rede Neural/RedeNeuralYolo/images/train
-val: /content/drive/MyDrive/Faculdade/Fase 6 - Colheita de Soluções Inteligentes -
-  transformando dados em ações/Cap 1 - O despertar da Rede Neural/RedeNeuralYolo/images/val
+train: "CAMINHO AQUI"/images/train
+val: "CAMINHO AQUI"/images/val
