@@ -8,7 +8,7 @@
 **Entregáveis contemplados:** 1 e 2
 
 ---
-##ATENÇÃO
+## ATENÇÃO 🚨🚨
 Para rodar o notebook na sua máquina, abra o arquivo "classificar.yaml" e substitua "CAMINHO AQUI" pelo caminho das pastas do seu *próprio drive*
 ## Descrição da Atividade
 
