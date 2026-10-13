@@ -8,7 +8,8 @@
 **Entregáveis contemplados:** 1 e 2
 
 ---
-
+##ATENÇÃO
+Para rodar o notebook na sua máquina, abra o arquivo "classificar.yaml" e substitua "CAMINHO AQUI" pelo caminho das pastas do seu *próprio drive*
 ## Descrição da Atividade
 
 Este projeto aplica técnicas de **Visão Computacional e Deep Learning** para reconhecer objetos em imagens utilizando duas classes: **Copo** e **Taça**.
@@ -372,7 +373,7 @@ Durante o treinamento registrado, a acurácia de validação apresentou oscilaç
 | YOLO customizada — 20 épocas | Sim | mAP@0.5 | 0,78250 | 1068,22 s | 18,92 s |
 | YOLO customizada — 40 épocas | Sim | mAP@0.5 | 0,99500 | 1987,35 s | 9,00 s |
 | YOLOv5s pré-treinada (COCO) | Não | Análise qualitativa | N/A | 0 s | 7,98 s |
-| CNN criada do zero | Sim | Accuracy | 0,72222 | 212,22 s | Não medido no notebook |
+| CNN criada do zero | Sim | Accuracy | 0,72222 | 212,22 s | 3.3608 s |
 
 > **Importante:** `mAP@0.5` e `accuracy` medem aspectos diferentes e não devem ser interpretados como se fossem a mesma métrica.
 
@@ -489,9 +490,7 @@ A própria estrutura e os resultados registrados no notebook evidenciam algumas 
 5. **A YOLO pré-treinada não foi treinada nas classes do projeto.**  
    Assim, sua avaliação é qualitativa e limitada às categorias aprendidas no COCO.
 
-6. **O notebook não registra o tempo total de inferência da CNN na tabela comparativa final.**
 
-Essas limitações não impedem a comparação, mas definem os limites de interpretação dos resultados encontrados.
 
 ---
 
@@ -618,7 +617,7 @@ O notebook concentra o desenvolvimento das duas entregas, os experimentos, as m�
 | YOLO customizada — 20 épocas | mAP@0.5 = 0,78250 | 17,8 min | 18,92 s |
 | YOLO customizada — 40 épocas | mAP@0.5 = 0,99500 | 33,1 min | 9,00 s |
 | YOLOv5s pré-treinada | Análise qualitativa | Não aplicável | 7,98 s |
-| CNN do zero | Accuracy = 72,22% | 3,5 min | Não medido |
+| CNN do zero | Accuracy = 72,22% | 3,5 min |3.3608 s  |
 
 ---
 
